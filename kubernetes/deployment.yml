@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: planet9
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: planet9
+  template:
+    metadata:
+      labels:
+        app: planet9
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: planet9
+        image: neptunesoftware/planet9
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 1Gi
+        ports:
+        - containerPort: 8080
+          name: planet9
+        env:
+        - name: DB_TYPE
+          value: "postgresql"
+        - name: DB_PSQL_HOST
+          value: "my.hosted.database.com"
+        - name: DB_PSQL_PORT
+          value: "5432"
+        - name: DB_PSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-user-pass
+              key: dbuser
+        - name: DB_PSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-user-pass
+              key: dbpass
+        - name: DB_PSQL_DBNAME
+          value: "Planet9"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: planet9
+spec:
+  ports:
+  - port: 8080
+  selector:
+    app: planet9
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: planet9-sqlite-pv-claim
+  labels:
+    app: planet9
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
