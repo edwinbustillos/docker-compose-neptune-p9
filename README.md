@@ -1,6 +1,6 @@
 ![alt text](assets/docker_neptune.png "Docker")
 
-[Visit Official Website](https://www.google.com)
+[Visit Official Website](https://neptune-software.com/)
 
 [Visit Official Documentation](https://community.neptune-software.com/documentation/planet9)
 
